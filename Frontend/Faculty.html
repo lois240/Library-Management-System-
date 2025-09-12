@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .hidden-section { display: none; }
+    .nav-btn {
+      width: 100%;
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.5rem;
+      transition: background 0.2s;
+    }
+    .nav-btn:hover { background-color: #1e40af; }
+  </style>
+</head>
+<body class="flex h-screen bg-gray-100">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-blue-900 text-white p-6 space-y-4">
+    <div class="flex items-center space-x-2 mb-6">
+      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Logo" class="w-10 h-10 rounded-full">
+      <h2 class="text-2xl font-bold">Faculty Panel</h2>
+    </div>
+    <nav class="space-y-2">
+      <button onclick="showSection('dashboard')" class="nav-btn">📊 Dashboard</button>
+      <button onclick="showSection('books')" class="nav-btn">📖 Books</button>
+      <button onclick="showSection('borrowReports')" class="nav-btn">📑 Reports</button>
+      <button onclick="showSection('courseMaterials')" class="nav-btn">📂 Course Materials</button>
+      <button onclick="showSection('analytics')" class="nav-btn">📈 Analytics</button>
+      <button onclick="showSection('announcements')" class="nav-btn">📢 Announcements</button>
+      <button onclick="showSection('profile')" class="nav-btn">👤 Profile</button>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-6 overflow-y-auto">
+    
+    <!-- Dashboard -->
+    <section id="dashboard">
+      <h2 class="text-2xl font-bold text-blue-900 mb-6">📊 Faculty Dashboard Overview</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+
+        <!-- Uploaded Materials -->
+        <div class="bg-white p-6 rounded shadow flex items-center space-x-4">
+          <div class="bg-blue-100 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-600">Uploaded Materials</h3>
+            <p class="text-3xl font-bold text-blue-900">12</p>
+          </div>
+        </div>
+
+        <!-- Book Requests -->
+        <div class="bg-white p-6 rounded shadow flex items-center space-x-4">
+          <div class="bg-green-100 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-600">Book Requests</h3>
+            <p class="text-3xl font-bold text-green-700">5</p>
+          </div>
+        </div>
+
+        <!-- Pending Reports -->
+        <div class="bg-white p-6 rounded shadow flex items-center space-x-4">
+          <div class="bg-red-100 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h6v6m2 4H7a2 2 0 01-2-2V7a2 2 0 012-2h4l2-2h6a2 2 0 012 2v12a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-600">Pending Reports</h3>
+            <p class="text-3xl font-bold text-red-700">3</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Books -->
+    <section id="books" class="hidden-section">
+      <h2 class="text-xl font-bold mb-4">📖 Browse & Saved Books</h2>
+      <input type="text" placeholder="Search books..." class="w-full p-3 border rounded mb-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-4 rounded shadow">
+          <h3 class="font-bold text-blue-900">Java Programming</h3>
+          <p class="text-gray-600">By James Gosling</p>
+          <button class="mt-2 bg-blue-700 text-white px-3 py-1 rounded">Save</button>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <h3 class="font-bold text-blue-900">Database Systems</h3>
+          <p class="text-gray-600">By C.J. Date</p>
+          <button class="mt-2 bg-blue-700 text-white px-3 py-1 rounded">Save</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Borrow Reports -->
+    <section id="borrowReports" class="hidden-section">
+      <h2 class="text-xl font-bold mb-4">📑 Borrow & Overdue Reports</h2>
+      <table class="w-full bg-white shadow rounded">
+        <thead class="bg-blue-100 text-blue-900">
+          <tr>
+            <th class="p-2 text-left">Student</th>
+            <th class="p-2 text-left">Book</th>
+            <th class="p-2 text-left">Due Date</th>
+            <th class="p-2 text-left">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="hover:bg-gray-50">
+            <td class="p-2">John Doe</td>
+            <td class="p-2">Java Programming</td>
+            <td class="p-2">2025-09-20</td>
+            <td class="p-2 text-green-600">On Time</td>
+          </tr>
+          <tr class="hover:bg-gray-50">
+            <td class="p-2">Mary Jane</td>
+            <td class="p-2">Database Systems</td>
+            <td class="p-2">2025-09-01</td>
+            <td class="p-2 text-red-600">Overdue</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Course Materials -->
+    <section id="courseMaterials" class="hidden-section">
+      <h2 class="text-xl font-bold mb-4">📂 Upload Course Materials</h2>
+      <form class="bg-white p-6 rounded shadow space-y-4 w-full md:w-1/2">
+        <input type="text" placeholder="Course Title" class="w-full p-2 border rounded">
+        <input type="text" placeholder="Semester" class="w-full p-2 border rounded">
+        <input type="file" class="w-full p-2 border rounded">
+        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded">Upload</button>
+      </form>
+    </section>
+
+    <!-- Analytics -->
+    <section id="analytics" class="hidden-section">
+      <h2 class="text-xl font-bold mb-4">📈 Analytics</h2>
+      <ul class="list-disc ml-6 space-y-2">
+        <li>Most Borrowed Subject: <b>Computer Science</b></li>
+        <li>Peak Borrowing Time: <b>10AM – 2PM</b></li>
+        <li>Top Performing Students in Reading: <b>Engineering Dept</b></li>
+      </ul>
+    </section>
+
+    <!-- Announcements -->
+    <section id="announcements" class="hidden-section">
+      <h2 class="text-xl font-bold mb-4">📢 Announcements</h2>
+      <form class="bg-white p-6 rounded shadow space-y-4 w-full md:w-1/2 mb-6">
+        <input type="text" placeholder="Announcement Title" class="w-full p-2 border rounded">
+        <textarea placeholder="Write announcement..." class="w-full p-2 border rounded"></textarea>
+        <button class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded">Post</button>
+      </form>
+      <div class="space-y-4">
+        <div class="bg-blue-50 p-4 rounded shadow">
+          <h4 class="font-bold">Library Week</h4>
+          <p>Don’t miss out on the upcoming library week with workshops!</p>
+        </div>
+        <div class="bg-blue-50 p-4 rounded shadow">
+          <h4 class="font-bold">New Arrivals</h4>
+          <p>We’ve added 20+ new books in Computer Science.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Profile -->
+    <section id="profile" class="hidden-section">
+      <h2 class="text-xl font-bold mb-4">👤 My Profile</h2>
+      <form class="bg-white p-6 rounded shadow space-y-4 w-full md:w-1/2">
+        <input type="text" value="Prof. Smith" class="w-full p-2 border rounded">
+        <input type="email" value="smith@faculty.edu" class="w-full p-2 border rounded">
+        <input type="password" placeholder="New Password" class="w-full p-2 border rounded">
+        <button class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded">Update Profile</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    function showSection(id) {
+      document.querySelectorAll("main section").forEach(sec => sec.classList.add("hidden-section"));
+      document.getElementById(id).classList.remove("hidden-section");
+    }
+    // Default: Dashboard
+    showSection('dashboard');
+  </script>
+</body>
+</html>
