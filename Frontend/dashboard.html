@@ -1,338 +1,733 @@
+<!-- save as admin-dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Admin Dashboard - Library Management</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     .hidden-section { display: none; }
+    .nav-btn { width:100%; text-align:left; padding:.6rem .9rem; border-radius:.5rem; transition:background .15s; }
+    .nav-btn:hover { background-color:#1e3a8a; }
+    .modal-bg { background: rgba(0,0,0,0.45); }
   </style>
 </head>
-<body class="bg-gray-100 flex h-screen">
+<body class="bg-gray-100 font-sans">
 
-  <!-- Sidebar -->
-  <aside class="w-64 bg-blue-900 text-white flex flex-col">
-    <div class="p-6 text-2xl font-bold border-b border-blue-700">
-      📚 Admin Panel
-    </div>
-    <nav class="flex-1 p-4 space-y-4">
-      <button onclick="showSection('dashboard')" class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-blue-700">
-        <i class="fa-solid fa-chart-line"></i> Dashboard
-      </button>
-      <button onclick="showSection('books')" class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-blue-700">
-        <i class="fa-solid fa-book"></i> Books
-      </button>
-      <button onclick="showSection('borrow')" class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-blue-700">
-        <i class="fa-solid fa-right-left"></i> Borrow & Return
-      </button>
-      <button onclick="showSection('reports')" class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-blue-700">
-        <i class="fa-solid fa-chart-pie"></i> Reports
-      </button>
-      <button onclick="showSection('users')" class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-blue-700">
-        <i class="fa-solid fa-users"></i> User Management
-      </button>
-    </nav>
-    <div class="p-4 border-t border-blue-700">
-      <button onclick="alert('Logging out...')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-700 w-full">
-        <i class="fa-solid fa-right-from-bracket"></i> Logout
-      </button>
-    </div>
-  </aside>
+  <div class="flex h-screen">
 
-  <!-- Main content -->
-  <div class="flex-1 flex flex-col">
-    <!-- Top bar -->
-    <header class="bg-white shadow p-4 flex items-center justify-between">
-      <input type="text" placeholder="Search books, users, reports..." 
-             class="w-1/2 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <div class="flex items-center gap-6">
-        <button class="relative">
-          <i class="fa-solid fa-bell text-gray-600 text-xl"></i>
-          <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
-        <img src="https://via.placeholder.com/40" alt="User" class="rounded-full w-10 h-10">
+    <!-- SIDEBAR -->
+    <aside class="w-72 bg-blue-900 text-white flex flex-col">
+      <div class="p-6 border-b border-blue-700 flex items-center gap-3">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="logo" class="w-10 h-10 rounded-full">
+        <div>
+          <div class="text-lg font-bold">E-Library Admin</div>
+        </div>
       </div>
-    </header>
 
-    <!-- Content sections -->
-    <main class="p-6 overflow-y-auto">
-      <!-- Dashboard -->
-      <section id="dashboard" class="section">
-        <h1 class="text-2xl font-bold mb-6">Dashboard Overview</h1>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          <div class="bg-white p-6 rounded-xl shadow flex items-center gap-4">
-            <i class="fa-solid fa-book text-3xl text-blue-600"></i>
+      <nav class="p-4 flex-1 space-y-2">
+        <button onclick="showSection('dashboard')" class="nav-btn flex items-center gap-3"><i class="fa-solid fa-chart-line w-4"></i> Dashboard</button>
+        <button onclick="showSection('books')" class="nav-btn flex items-center gap-3"><i class="fa-solid fa-book w-4"></i> Books</button>
+        <button onclick="showSection('borrow')" class="nav-btn flex items-center gap-3"><i class="fa-solid fa-right-left w-4"></i> Borrow & Return</button>
+        <button onclick="showSection('reports')" class="nav-btn flex items-center gap-3"><i class="fa-solid fa-chart-pie w-4"></i> Reports</button>
+        <button onclick="showSection('users')" class="nav-btn flex items-center gap-3"><i class="fa-solid fa-users w-4"></i> Users</button>
+        <button onclick="showSection('announcements')" class="nav-btn flex items-center gap-3"><i class="fa-solid fa-bullhorn w-4"></i> Announcements</button>
+        <button onclick="showSection('audit')" class="nav-btn flex items-center gap-3"><i class="fa-solid fa-history w-4"></i> Audit Log</button>
+      </nav>
+
+      <div class="p-4 border-t border-blue-700">
+        <button id="logoutBtn" class="w-full flex items-center gap-3 p-2 rounded hover:bg-blue-700">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="flex-1 overflow-auto">
+      <!-- top bar -->
+      <header class="bg-white shadow p-4 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <input id="globalSearch" type="text" placeholder="Search books/users..." class="px-4 py-2 border rounded-lg w-96">
+          <button class="text-gray-600"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+        <div class="flex items-center gap-4">
+          <button class="relative">
+            <i class="fa-solid fa-bell text-gray-600 text-xl"></i>
+            <span id="notifDot" class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+          </button>
+          <div class="flex items-center gap-2">
+            <img src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full" alt="admin">
             <div>
-              <p class="text-gray-500">Total Books</p>
-              <h2 class="text-xl font-bold">12,450</h2>
-            </div>
-          </div>
-          <div class="bg-white p-6 rounded-xl shadow flex items-center gap-4">
-            <i class="fa-solid fa-users text-3xl text-green-600"></i>
-            <div>
-              <p class="text-gray-500">Active Users</p>
-              <h2 class="text-xl font-bold">1,245</h2>
-            </div>
-          </div>
-          <div class="bg-white p-6 rounded-xl shadow flex items-center gap-4">
-            <i class="fa-solid fa-right-left text-3xl text-yellow-600"></i>
-            <div>
-              <p class="text-gray-500">Books Borrowed</p>
-              <h2 class="text-xl font-bold">980</h2>
-            </div>
-          </div>
-          <div class="bg-white p-6 rounded-xl shadow flex items-center gap-4">
-            <i class="fa-solid fa-coins text-3xl text-red-600"></i>
-            <div>
-              <p class="text-gray-500">Fines Collected</p>
-              <h2 class="text-xl font-bold">₦25,600</h2>
+              <div class="font-semibold">Admin</div>
             </div>
           </div>
         </div>
-      </section>
+      </header>
 
-      <!-- Books Management -->
-      <section id="books" class="section hidden-section">
-        <h1 class="text-2xl font-bold mb-6">Books Management</h1>
+      <!-- content -->
+      <div class="p-6 space-y-6">
 
-        <!-- Upload Form -->
-        <div class="bg-white p-6 rounded-xl shadow mb-6">
-          <h2 class="font-semibold text-gray-700 mb-4 flex items-center space-x-2">
-            <i class="fa-solid fa-plus text-green-600"></i>
-            <span>Add / Upload New Book</span>
-          </h2>
-
-          <form id="bookForm" class="space-y-4">
-            <input type="text" name="title" placeholder="Book Title" class="w-full p-2 border rounded-md" required>
-            <input type="text" name="author" placeholder="Author" class="w-full p-2 border rounded-md" required>
-            <input type="text" name="isbn" placeholder="ISBN" class="w-full p-2 border rounded-md" required>
-            <input type="text" name="category" placeholder="Category/Genre" class="w-full p-2 border rounded-md">
-            <input type="file" name="file" class="w-full p-2 border rounded-md" accept=".pdf,.epub,.docx">
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-              Upload Book
-            </button>
-          </form>
-        </div>
-
-        <!-- Book List -->
-        <div class="bg-white p-6 rounded-xl shadow">
-          <h2 class="font-semibold text-gray-700 mb-4">Available Books</h2>
-          <ul id="bookList" class="list-disc ml-6 text-gray-700 space-y-2"></ul>
-        </div>
-      </section>
-
-      <!-- Borrow & Return -->
-      <section id="borrow" class="section hidden-section">
-        <h1 class="text-2xl font-bold mb-6">Borrow & Return</h1>
-        <form class="space-y-4 bg-white p-6 rounded-xl shadow w-1/2">
-          <input type="text" placeholder="Enter Book ID" class="w-full p-2 border rounded">
-          <input type="text" placeholder="Enter User ID" class="w-full p-2 border rounded">
-          <button class="bg-blue-600 text-white px-4 py-2 rounded-lg">Issue Book</button>
-        </form>
-      </section>
-
-      <!-- Reports -->
-      <section id="reports" class="section hidden-section">
-        <h1 class="text-2xl font-bold text-gray-700 mb-6 flex items-center space-x-2">
-          <i class="fa-solid fa-chart-pie text-blue-600"></i>
-          <span>Reports & Analytics</span>
-        </h1>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Most Borrowed Books -->
-          <div class="bg-white p-6 rounded-xl shadow-md">
-            <h2 class="font-bold text-gray-600 mb-3 flex items-center space-x-2">
-              <i class="fa-solid fa-star text-yellow-500"></i>
-              <span>Most Borrowed Books</span>
-            </h2>
-            <ul class="list-disc ml-6 text-gray-700 space-y-2">
-              <li><b>Java Programming</b> – 120 borrows</li>
-              <li><b>Database Systems</b> – 95 borrows</li>
-              <li><b>Networking Basics</b> – 80 borrows</li>
-            </ul>
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="">
+          <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
+            <div class="text-sm text-gray-500">Welcome back, Admin</div>
           </div>
 
-          <!-- Overdue Books -->
-          <div class="bg-white p-6 rounded-xl shadow-md">
-            <h2 class="font-bold text-gray-600 mb-3 flex items-center space-x-2">
-              <i class="fa-solid fa-triangle-exclamation text-red-500"></i>
-              <span>Overdue Books</span>
-            </h2>
-            <p class="text-red-600 font-medium">📌 45 overdue books pending return.</p>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+            <div class="bg-white p-5 rounded-lg shadow flex items-center gap-4">
+              <div class="bg-blue-100 p-3 rounded-full text-blue-700"><i class="fa-solid fa-book-open"></i></div>
+              <div>
+                <div class="text-sm text-gray-500">Total Books</div>
+                <div id="cardTotalBooks" class="text-xl font-bold">—</div>
+              </div>
+            </div>
+            <div class="bg-white p-5 rounded-lg shadow flex items-center gap-4">
+              <div class="bg-green-100 p-3 rounded-full text-green-700"><i class="fa-solid fa-users"></i></div>
+              <div>
+                <div class="text-sm text-gray-500">Active Users</div>
+                <div id="cardActiveUsers" class="text-xl font-bold">—</div>
+              </div>
+            </div>
+            <div class="bg-white p-5 rounded-lg shadow flex items-center gap-4">
+              <div class="bg-yellow-100 p-3 rounded-full text-yellow-700"><i class="fa-solid fa-right-left"></i></div>
+              <div>
+                <div class="text-sm text-gray-500">Books Borrowed</div>
+                <div id="cardBorrowed" class="text-xl font-bold">—</div>
+              </div>
+            </div>
+            <div class="bg-white p-5 rounded-lg shadow flex items-center gap-4">
+              <div class="bg-red-100 p-3 rounded-full text-red-700"><i class="fa-solid fa-coins"></i></div>
+              <div>
+                <div class="text-sm text-gray-500">Fines Collected</div>
+                <div id="cardFines" class="text-xl font-bold">₦0</div>
+              </div>
+            </div>
           </div>
 
-          <!-- Library Insights -->
-          <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2">
-            <h2 class="font-bold text-gray-600 mb-3 flex items-center space-x-2">
-              <i class="fa-solid fa-chart-line text-green-600"></i>
-              <span>Library Insights</span>
-            </h2>
-            <ul class="list-disc ml-6 text-gray-700 space-y-2">
-              <li>Most Active Users: <b>Students (65%)</b></li>
-              <li>Peak Borrowing Time: <b>10 AM – 2 PM</b></li>
-              <li>Category Utilization: <b>Science & Tech (70%)</b>, Arts (20%), Others (10%)</li>
-            </ul>
-          </div>
-        </div>
-      </section>
+          <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-4 rounded shadow">
+              <h3 class="font-semibold text-gray-700">Recent Activity</h3>
+              <ul id="recentActivity" class="mt-3 space-y-2 text-sm text-gray-700"></ul>
+            </div>
 
-      <!-- User Management -->
-      <section id="users" class="section hidden-section">
-        <h1 class="text-2xl font-bold mb-6">User Management</h1>
-        <button onclick="openUserModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg">+ Add User</button>
-        <table class="mt-4 w-full border-collapse bg-white shadow rounded-xl overflow-hidden">
-          <thead class="bg-blue-100">
-            <tr>
-              <th class="p-3 text-left">ID</th>
-              <th class="p-3 text-left">Name</th>
-              <th class="p-3 text-left">Role</th>
-              <th class="p-3 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="userTable"></tbody>
-        </table>
-      </section>
+            <div class="bg-white p-4 rounded shadow md:col-span-2">
+              <h3 class="font-semibold text-gray-700">Quick Actions</h3>
+              <div class="mt-3 flex flex-wrap gap-3">
+                <button class="px-4 py-2 bg-blue-600 text-white rounded" onclick="showSection('books')">Add Book</button>
+                <button class="px-4 py-2 bg-green-600 text-white rounded" onclick="showSection('borrow')">Issue Book</button>
+                <button class="px-4 py-2 bg-yellow-600 text-white rounded" onclick="showSection('users')">Add User</button>
+                <button class="px-4 py-2 bg-red-600 text-white rounded" onclick="showSection('reports')">View Reports</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BOOKS -->
+        <section id="books" class="hidden-section">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-bold">Books Management</h2>
+            <div class="text-sm text-gray-500">Add, edit or remove books</div>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow mt-4">
+            <form id="bookForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <input name="title" required class="p-2 border rounded" placeholder="Title">
+              <input name="author" required class="p-2 border rounded" placeholder="Author">
+              <input name="isbn" class="p-2 border rounded" placeholder="ISBN">
+              <input name="category" class="p-2 border rounded" placeholder="Category">
+              <input name="copies" type="number" min="1" class="p-2 border rounded" placeholder="Copies" value="1">
+              <input name="file" type="file" class="p-2 border rounded" accept=".pdf,.epub,.docx">
+              <div class="md:col-span-3 flex gap-3 justify-end">
+                <button type="submit" class="px-4 py-2 bg-blue-700 text-white rounded">Save Book</button>
+                <button type="button" id="clearBookBtn" class="px-4 py-2 border rounded">Clear</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="bg-white p-4 rounded shadow mt-4">
+            <h3 class="font-semibold mb-3">Available Books</h3>
+            <div class="overflow-auto max-h-64">
+              <table class="w-full text-sm">
+                <thead class="bg-blue-50">
+                  <tr>
+                    <th class="p-2 text-left">ID</th>
+                    <th class="p-2 text-left">Title</th>
+                    <th class="p-2 text-left">Author</th>
+                    <th class="p-2 text-left">Status</th>
+                    <th class="p-2 text-left">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="bookTable" class="divide-y"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- BORROW & RETURN -->
+        <section id="borrow" class="hidden-section">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-bold">Borrow & Return</h2>
+            <div class="text-sm text-gray-500">Issue, return and manage borrows</div>
+          </div>
+
+          <div class="bg-white p-6 rounded shadow mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form id="issueForm" class="space-y-3">
+              <h3 class="font-semibold">Issue Book</h3>
+              <select id="issueBookSelect" class="w-full p-2 border rounded"></select>
+              <select id="issueUserSelect" class="w-full p-2 border rounded"></select>
+              <div class="flex gap-2">
+                <input id="issueDays" type="number" min="1" value="14" class="p-2 border rounded w-32" />
+                <div class="flex items-center text-sm text-gray-500">days (default 14)</div>
+              </div>
+              <button class="px-4 py-2 bg-green-600 text-white rounded">Issue Book</button>
+            </form>
+
+            <div>
+              <h3 class="font-semibold mb-2">Borrowed Books</h3>
+              <div class="overflow-auto max-h-64">
+                <table class="w-full text-sm">
+                  <thead class="bg-blue-50">
+                    <tr>
+                      <th class="p-2 text-left">Book</th>
+                      <th class="p-2 text-left">User</th>
+                      <th class="p-2 text-left">Due Date</th>
+                      <th class="p-2 text-left">Status</th>
+                      <th class="p-2 text-left">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="borrowTable" class="divide-y"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- REPORTS -->
+        <section id="reports" class="hidden-section">
+          <h2 class="text-xl font-bold">Reports & Analytics</h2>
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded shadow">
+              <h3 class="font-semibold">Most Borrowed Books</h3>
+              <ul id="mostBorrowed" class="mt-2 text-sm text-gray-700"></ul>
+            </div>
+            <div class="bg-white p-4 rounded shadow">
+              <h3 class="font-semibold">Overdue Books</h3>
+              <ul id="overdueList" class="mt-2 text-sm text-gray-700"></ul>
+            </div>
+            <div class="bg-white p-4 rounded shadow">
+              <h3 class="font-semibold">Library Insights</h3>
+              <ul id="insights" class="mt-2 text-sm text-gray-700"></ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- USERS -->
+        <section id="users" class="hidden-section">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-bold">User Management</h2>
+            <div class="text-sm text-gray-500">Add and manage users</div>
+          </div>
+
+          <div class="bg-white p-6 rounded shadow mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form id="userForm" class="space-y-3">
+              <input name="name" required class="p-2 border rounded" placeholder="Full name">
+              <input name="email" type="email" required class="p-2 border rounded" placeholder="Email">
+              <input name="id" type="id" required class="p-2 border rounded" placeholder="ID">
+              <select name="role" class="p-2 border rounded">
+                <option value="STUDENT">Student</option>
+                <option value="FACULTY">Faculty</option>
+                <option value="LIBRARIAN">Librarian</option>
+                <option value="ADMIN">Admin</option>
+              </select>
+              <div class="flex gap-2 justify-end">
+                <button type="submit" class="px-4 py-2 bg-blue-700 text-white rounded">Add User</button>
+              </div>
+            </form>
+
+            <div>
+              <h3 class="font-semibold">Users</h3>
+              <div class="overflow-auto max-h-64 mt-2">
+                <table class="w-full text-sm">
+                  <thead class="bg-blue-50">
+                    <tr>
+                      <th class="p-2 text-left">ID</th>
+                      <th class="p-2 text-left">Name</th>
+                      <th class="p-2 text-left">Role</th>
+                      <th class="p-2 text-left">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="userTableBody" class="divide-y"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ANNOUNCEMENTS -->
+        <section id="announcements" class="hidden-section">
+          <h2 class="text-xl font-bold">Announcements</h2>
+          <div class="bg-white p-4 rounded shadow mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form id="announcementForm" class="space-y-3">
+              <input name="title" required class="p-2 border rounded" placeholder="Title">
+              <textarea name="content" required class="p-2 border rounded" placeholder="Message"></textarea>
+              <div class="flex justify-end">
+                <button class="px-4 py-2 bg-blue-700 text-white rounded">Post</button>
+              </div>
+            </form>
+            <div>
+              <h3 class="font-semibold">Recent Announcements</h3>
+              <ul id="announcementList" class="mt-2 space-y-2 text-sm text-gray-700"></ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- AUDIT LOG -->
+        <section id="audit" class="hidden-section">
+          <h2 class="text-xl font-bold">Audit Log</h2>
+          <div class="bg-white p-4 rounded shadow mt-4">
+            <div class="overflow-auto max-h-96">
+              <ul id="auditList" class="text-sm text-gray-700 space-y-2"></ul>
+            </div>
+          </div>
+        </section>
+
+      </div>
     </main>
   </div>
 
-  <!-- User Modal -->
-  <div id="userModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center">
-    <div class="bg-white p-6 rounded-lg shadow w-1/3">
-      <h2 class="text-xl font-bold mb-4">Add User</h2>
-      <form id="userForm" class="space-y-3">
-        <input type="text" name="name" placeholder="Name" class="w-full border p-2 rounded" required>
-        <input type="email" name="email" placeholder="Email" class="w-full border p-2 rounded" required>
-        <select name="role" class="w-full border p-2 rounded" required>
-          <option value="STUDENT">Student</option>
-          <option value="FACULTY">Faculty</option>
-          <option value="LIBRARIAN">Librarian</option>
-          <option value="ADMIN">Admin</option>
-        </select>
-        <div class="flex justify-end gap-2">
-          <button type="button" onclick="closeUserModal()" class="px-4 py-2 border rounded">Cancel</button>
-          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Save</button>
-        </div>
-      </form>
+  <!-- Modals (Edit book, Confirm return, etc.) -->
+  <div id="modalRoot"></div>
+
+<script>
+/*
+ Admin dashboard (client-side) with fallback to localStorage.
+ - Data models: books[], users[], borrows[], announcements[], audit[]
+ - Each record has an id (string)
+ - Attempt fetch to backend endpoints if present, else localStorage fallback
+*/
+
+const API_BASE = 'http://localhost:8080/api'; // if your backend exists, endpoints should match
+
+/* ---------- utility ---------- */
+function id() { return Math.random().toString(36).slice(2,9); }
+function nowISO() { return new Date().toISOString(); }
+function formatDateISO(d){ let D=new Date(d); return D.toISOString().slice(0,10); }
+function daysBetween(a,b){ return Math.ceil((new Date(b)-new Date(a))/(1000*60*60*24)); }
+
+/* ---------- storage helpers ---------- */
+function saveLocal(key,val){ localStorage.setItem(key, JSON.stringify(val)); }
+function loadLocal(key, def=[]){ try{ return JSON.parse(localStorage.getItem(key))||def }catch(e){ return def } }
+
+/* ---------- app state ---------- */
+let state = {
+  books: loadLocal('books', [
+    { id:'b1', title:'Java Programming', author:'James Gosling', isbn:'12345', category:'CS', copies:3, borrowed:0 },
+    { id:'b2', title:'Database Systems', author:'C.J. Date', isbn:'67890', category:'CS', copies:2, borrowed:1 },
+  ]),
+  users: loadLocal('users', [
+    { id:'u1', name:'John Doe', email:'john@example.com', role:'STUDENT' },
+    { id:'u2', name:'Mary Jane', email:'mary@example.com', role:'STUDENT' },
+  ]),
+  borrows: loadLocal('borrows', [
+    // { id:'br1', bookId:'b2', userId:'u2', borrowedAt:'2025-08-20', dueAt:'2025-09-03', returnedAt:null, fine:0 }
+  ]),
+  announcements: loadLocal('announcements', []),
+  audit: loadLocal('audit', []),
+  finesCollected: Number(localStorage.getItem('finesCollected')||0)
+};
+
+/* ---------- persistence ---------- */
+function persistAll(){
+  saveLocal('books', state.books);
+  saveLocal('users', state.users);
+  saveLocal('borrows', state.borrows);
+  saveLocal('announcements', state.announcements);
+  saveLocal('audit', state.audit);
+  localStorage.setItem('finesCollected', state.finesCollected);
+}
+
+/* ---------- audit ---------- */
+function pushAudit(text){
+  const entry = { id: id(), text, at: nowISO() };
+  state.audit.unshift(entry);
+  if(state.audit.length>200) state.audit.pop();
+  persistAll();
+  renderAudit();
+}
+
+/* ---------- rendering ---------- */
+function showSection(sectionId){
+  document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden-section'));
+  const el=document.getElementById(sectionId);
+  if(el) el.classList.remove('hidden-section');
+  // refresh some sections
+  if(sectionId==='books') renderBooks();
+  if(sectionId==='users') renderUsers();
+  if(sectionId==='borrow') {
+    renderBorrow();
+    renderIssueSelects();
+  }
+  if(sectionId==='reports') renderReports();
+  if(sectionId==='announcements') renderAnnouncements();
+  if(sectionId==='audit') renderAudit();
+}
+window.showSection = showSection;
+
+/* ---------- BOOKS ---------- */
+const bookForm = document.getElementById('bookForm');
+bookForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const fd = new FormData(bookForm);
+  const book = {
+    id: id(),
+    title: fd.get('title'),
+    author: fd.get('author'),
+    isbn: fd.get('isbn') || '',
+    category: fd.get('category') || '',
+    copies: Number(fd.get('copies')||1),
+    borrowed: 0,
+    createdAt: nowISO()
+  };
+  // try backend
+  try {
+    let res = await fetch(`${API_BASE}/books`, { method:'POST', body: JSON.stringify(book), headers:{'Content-Type':'application/json'} });
+    if(res.ok){ pushAudit(`Book added via API: ${book.title}`); }
+    else { throw new Error('API add failed'); }
+  } catch(err){
+    state.books.unshift(book);
+    persistAll();
+    pushAudit(`Book added: ${book.title}`);
+  }
+  bookForm.reset();
+  renderBooks();
+  renderDashboardCards();
+});
+
+function renderBooks(){
+  const tbody = document.getElementById('bookTable');
+  tbody.innerHTML = '';
+  state.books.forEach(b=>{
+    const status = (b.copies - (b.borrowed||0))>0 ? 'Available' : 'All Borrowed';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="p-2">${b.id}</td>
+      <td class="p-2">${escapeHtml(b.title)}</td>
+      <td class="p-2">${escapeHtml(b.author)}</td>
+      <td class="p-2">${status}</td>
+      <td class="p-2">
+        <button class="text-yellow-600 mr-2" onclick="openEditBook('${b.id}')">Edit</button>
+        <button class="text-red-600" onclick="deleteBook('${b.id}')">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+function openEditBook(bookId){
+  const b = state.books.find(x=>x.id===bookId); if(!b) return alert('Book not found');
+  showModal(`
+    <h3 class="text-lg font-semibold mb-2">Edit Book</h3>
+    <form id="editBookForm" class="space-y-2">
+      <input name="title" value="${escapeHtmlAttr(b.title)}" class="p-2 border rounded w-full">
+      <input name="author" value="${escapeHtmlAttr(b.author)}" class="p-2 border rounded w-full">
+      <input name="copies" type="number" value="${b.copies}" class="p-2 border rounded w-full">
+      <div class="flex justify-end gap-2">
+        <button type="button" onclick="closeModal()" class="px-3 py-1 border rounded">Cancel</button>
+        <button type="submit" class="px-3 py-1 bg-blue-700 text-white rounded">Save</button>
+      </div>
+    </form>
+  `, async (modal)=>{
+    modal.querySelector('#editBookForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      b.title = fd.get('title'); b.author = fd.get('author'); b.copies = Number(fd.get('copies')||1);
+      try {
+        let res = await fetch(`${API_BASE}/books/${b.id}`, { method:'PUT', body: JSON.stringify(b), headers:{'Content-Type':'application/json'} });
+        if(res.ok) pushAudit(`Book updated via API: ${b.title}`);
+        else throw new Error('API update failed');
+      } catch(err){
+        // local update
+        const idx = state.books.findIndex(x=>x.id===b.id);
+        if(idx>-1) state.books[idx]=b;
+        persistAll();
+        pushAudit(`Book updated: ${b.title}`);
+      }
+      closeModal(); renderBooks(); renderDashboardCards();
+    });
+  });
+}
+function deleteBook(bookId){
+  if(!confirm('Delete this book?')) return;
+  try {
+    // attempt backend delete
+    fetch(`${API_BASE}/books/${bookId}`, { method:'DELETE' })
+      .then(res=>{
+        if(res.ok){ pushAudit(`Book deleted via API: ${bookId}`); } 
+        else throw new Error('delete failed');
+      }).catch(()=> {
+        state.books = state.books.filter(b=>b.id!==bookId);
+        persistAll();
+        pushAudit(`Book deleted: ${bookId}`);
+        renderBooks(); renderDashboardCards();
+      });
+  } catch(e){
+    state.books = state.books.filter(b=>b.id!==bookId);
+    persistAll();
+    pushAudit(`Book deleted: ${bookId}`);
+    renderBooks(); renderDashboardCards();
+  }
+}
+
+/* ---------- USERS ---------- */
+const userForm = document.getElementById('userForm');
+userForm.addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const fd = new FormData(userForm);
+  const user = { id:id(), name: fd.get('name'), email: fd.get('email'), role: fd.get('role') };
+  state.users.unshift(user);
+  persistAll();
+  pushAudit(`User added: ${user.name} (${user.role})`);
+  userForm.reset();
+  renderUsers();
+  renderDashboardCards();
+});
+function renderUsers(){
+  const tbody = document.getElementById('userTableBody');
+  tbody.innerHTML = '';
+  state.users.forEach(u=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="p-2">${u.id}</td>
+      <td class="p-2">${escapeHtml(u.name)}</td>
+      <td class="p-2">${u.role}</td>
+      <td class="p-2">
+        <button class="text-red-600" onclick="deleteUser('${u.id}')">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+function deleteUser(idu){
+  if(!confirm('Delete user?')) return;
+  state.users = state.users.filter(u=>u.id!==idu);
+  persistAll();
+  pushAudit(`User deleted: ${idu}`);
+  renderUsers();
+  renderDashboardCards();
+}
+
+/* ---------- BORROW / RETURN ---------- */
+const issueForm = document.getElementById('issueForm');
+issueForm.addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const bookId = document.getElementById('issueBookSelect').value;
+  const userId = document.getElementById('issueUserSelect').value;
+  const days = Number(document.getElementById('issueDays').value || 14);
+  if(!bookId || !userId) return alert('Select book and user');
+  const book = state.books.find(b=>b.id===bookId);
+  if(!book) return alert('book missing');
+  const available = book.copies - (book.borrowed||0);
+  if(available<=0) return alert('No copies available');
+  const borrowedAt = nowISO();
+  const dueAt = new Date(Date.now() + days*24*60*60*1000).toISOString();
+  const br = { id:id(), bookId, userId, borrowedAt, dueAt, returnedAt:null, fine:0 };
+  state.borrows.unshift(br);
+  book.borrowed = (book.borrowed||0)+1;
+  persistAll();
+  pushAudit(`Book issued: ${book.title} -> ${userId}`);
+  renderBorrow(); renderBooks(); renderDashboardCards();
+});
+
+function renderIssueSelects(){
+  const bookSel = document.getElementById('issueBookSelect');
+  bookSel.innerHTML = '<option value="">-- select book --</option>';
+  state.books.forEach(b=>{
+    const available = b.copies - (b.borrowed||0);
+    bookSel.innerHTML += `<option value="${b.id}">${escapeHtml(b.title)} (${available} available)</option>`;
+  });
+  const usrSel = document.getElementById('issueUserSelect');
+  usrSel.innerHTML = '<option value="">-- select user --</option>';
+  state.users.forEach(u=> usrSel.innerHTML += `<option value="${u.id}">${escapeHtml(u.name)} (${u.role})</option>`);
+}
+
+function renderBorrow(){
+  const tbody = document.getElementById('borrowTable');
+  tbody.innerHTML = '';
+  state.borrows.forEach(br=>{
+    const book = state.books.find(b=>b.id===br.bookId) || { title:'(deleted)'};
+    const user = state.users.find(u=>u.id===br.userId) || { name:'(deleted)'};
+    const due = formatDateISO(br.dueAt);
+    const returned = br.returnedAt ? formatDateISO(br.returnedAt) : null;
+    const status = br.returnedAt ? 'Returned' : (new Date() > new Date(br.dueAt) ? 'Overdue' : 'Borrowed');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="p-2">${escapeHtml(book.title)}</td>
+      <td class="p-2">${escapeHtml(user.name)}</td>
+      <td class="p-2">${due}${returned?'<div class="text-xs text-gray-500">Returned: '+returned+'</div>':''}</td>
+      <td class="p-2 ${status==='Overdue'?'text-red-600':status==='Returned'?'text-green-600':'text-yellow-600'}">${status}</td>
+      <td class="p-2">
+        ${br.returnedAt?'':
+          `<button class="text-green-600 mr-2" onclick="openReturn('${br.id}')">Return</button>`}
+        <button class="text-gray-600" onclick="viewBorrow('${br.id}')">View</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function openReturn(borrowId){
+  const br = state.borrows.find(x=>x.id===borrowId);
+  if(!br) return;
+  const book = state.books.find(b=>b.id===br.bookId) || {};
+  // compute overdue days
+  const now = new Date();
+  const due = new Date(br.dueAt);
+  let overdueDays = 0;
+  if(now > due) overdueDays = Math.ceil((now - due)/(1000*60*60*24));
+  const perDay = 100; // fine per day (₦100) — change as needed
+  const fine = overdueDays * perDay;
+  showModal(`
+    <h3 class="text-lg font-semibold mb-2">Return Book</h3>
+    <div class="mb-3 text-sm text-gray-700">Book: <b>${escapeHtml(book.title||'')}</b></div>
+    <div class="mb-3 text-sm text-gray-700">Overdue days: <b>${overdueDays}</b></div>
+    <div class="mb-3 text-sm text-gray-700">Calculated fine: <b>₦${fine}</b></div>
+    <div class="flex justify-end gap-2">
+      <button onclick="closeModal()" class="px-3 py-1 border rounded">Cancel</button>
+      <button id="confirmReturnBtn" class="px-3 py-1 bg-green-600 text-white rounded">Confirm Return</button>
     </div>
-  </div>
-
-  <script>
-    function showSection(sectionId) {
-      document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden-section'));
-      document.getElementById(sectionId).classList.remove('hidden-section');
-    }
-
-    // BOOKS API
-    document.getElementById("bookForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      let response = await fetch("http://localhost:8080/api/books", {
-        method: "POST",
-        body: formData
-      });
-      if (response.ok) {
-        alert("Book uploaded successfully!");
-        this.reset();
-        loadBooks();
-      } else {
-        alert("Error uploading book.");
-      }
+  `, (modal)=>{
+    modal.querySelector('#confirmReturnBtn').addEventListener('click', ()=>{
+      // mark returned
+      br.returnedAt = nowISO();
+      br.fine = fine;
+      const bookObj = state.books.find(b=>b.id===br.bookId);
+      if(bookObj) { bookObj.borrowed = Math.max(0,(bookObj.borrowed||0)-1); }
+      state.finesCollected += fine;
+      persistAll();
+      pushAudit(`Book returned: ${bookObj?.title || br.bookId} (fine ₦${fine})`);
+      closeModal();
+      renderBorrow(); renderBooks(); renderDashboardCards();
     });
+  });
+}
 
-    async function loadBooks() {
-      let res = await fetch("http://localhost:8080/api/books");
-      if (res.ok) {
-        let books = await res.json();
-        let list = document.getElementById("bookList");
-        list.innerHTML = "";
-        books.forEach(b => {
-          let li = document.createElement("li");
-          li.className = "flex justify-between items-center";
-          li.innerHTML = `
-            <span>${b.title} by ${b.author} (${b.isbn})</span>
-            <div class="space-x-2">
-              <button onclick="editBook('${b.id}')" class="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
-              <button onclick="deleteBook('${b.id}')" class="bg-red-600 text-white px-2 py-1 rounded">Delete</button>
-            </div>
-          `;
-          list.appendChild(li);
-        });
-      }
-    }
+function viewBorrow(borrowId){
+  const br = state.borrows.find(x=>x.id===borrowId); if(!br) return;
+  const book = state.books.find(b=>b.id===br.bookId) || {};
+  const user = state.users.find(u=>u.id===br.userId) || {};
+  showModal(`
+    <h3 class="text-lg font-semibold mb-2">Borrow Details</h3>
+    <div class="text-sm text-gray-700">Book: <b>${escapeHtml(book.title||'')}</b></div>
+    <div class="text-sm text-gray-700">User: <b>${escapeHtml(user.name||'')}</b></div>
+    <div class="text-sm text-gray-700">Borrowed At: ${formatDateISO(br.borrowedAt)}</div>
+    <div class="text-sm text-gray-700">Due At: ${formatDateISO(br.dueAt)}</div>
+    <div class="mt-3 flex justify-end">
+      <button onclick="closeModal()" class="px-3 py-1 border rounded">Close</button>
+    </div>
+  `);
+}
 
-    async function deleteBook(id) {
-      if (confirm("Are you sure you want to delete this book?")) {
-        let res = await fetch(`http://localhost:8080/api/books/${id}`, { method: "DELETE" });
-        if (res.ok) {
-          alert("Book deleted!");
-          loadBooks();
-        }
-      }
-    }
+/* ---------- REPORTS ---------- */
+function renderReports(){
+  // Most borrowed: count per book
+  const counts = {};
+  state.borrows.forEach(b=> counts[b.bookId] = (counts[b.bookId]||0)+1);
+  const arr = Object.entries(counts).map(([bookId,c])=>({bookId,c})).sort((a,b)=>b.c-a.c).slice(0,5);
+  const mostBorrowed = document.getElementById('mostBorrowed'); mostBorrowed.innerHTML='';
+  arr.forEach(x=>{
+    const bk = state.books.find(b=>b.id===x.bookId);
+    mostBorrowed.innerHTML += `<li>${escapeHtml(bk?.title||x.bookId)} - ${x.c} borrows</li>`;
+  });
+  // Overdue
+  const overdueList = document.getElementById('overdueList'); overdueList.innerHTML='';
+  state.borrows.filter(b=>!b.returnedAt && new Date(b.dueAt) < new Date()).forEach(b=>{
+    const book = state.books.find(x=>x.id===b.bookId); const user = state.users.find(x=>x.id===b.userId);
+    overdueList.innerHTML += `<li>${escapeHtml(book?.title||b.bookId)} — ${escapeHtml(user?.name||b.userId)} (due ${formatDateISO(b.dueAt)})</li>`;
+  });
+  // insights
+  const ins = document.getElementById('insights'); ins.innerHTML='';
+  const totalBooks = state.books.length;
+  const totalUsers = state.users.length;
+  const borrowedCount = state.borrows.filter(x=>!x.returnedAt).length;
+  ins.innerHTML = `<li>Total Books: <b>${totalBooks}</b></li>
+                   <li>Total Users: <b>${totalUsers}</b></li>
+                   <li>Currently Borrowed: <b>${borrowedCount}</b></li>`;
+}
 
-    function editBook(id) {
-      alert("Open edit modal for book ID: " + id);
-      // TODO: Implement edit book modal
-    }
+/* ---------- ANNOUNCEMENTS ---------- */
+const annForm = document.getElementById('announcementForm');
+annForm.addEventListener('submit',(e)=>{
+  e.preventDefault();
+  const fd = new FormData(annForm);
+  const ann = { id:id(), title: fd.get('title'), content: fd.get('content'), at: nowISO() };
+  state.announcements.unshift(ann);
+  persistAll(); pushAudit(`Announcement posted: ${ann.title}`);
+  annForm.reset(); renderAnnouncements();
+});
+function renderAnnouncements(){
+  const list = document.getElementById('announcementList'); list.innerHTML='';
+  state.announcements.forEach(a=>{
+    list.innerHTML += `<li class="p-3 bg-blue-50 rounded"><b>${escapeHtml(a.title)}</b><div class="text-xs text-gray-600">${formatDateISO(a.at)}</div><div>${escapeHtml(a.content)}</div></li>`;
+  });
+}
 
-    // USERS API
-    function openUserModal() { document.getElementById("userModal").classList.remove("hidden"); }
-    function closeUserModal() { document.getElementById("userModal").classList.add("hidden"); }
+/* ---------- AUDIT ---------- */
+function renderAudit(){
+  const ul = document.getElementById('auditList'); ul.innerHTML='';
+  state.audit.forEach(a => {
+    ul.innerHTML += `<li class="text-xs text-gray-700 p-2 border-b">${formatDateISO(a.at)} — ${escapeHtml(a.text)}</li>`;
+  });
+}
 
-    document.getElementById("userForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      let formData = new FormData(this);
-      let user = Object.fromEntries(formData.entries());
+/* ---------- dashboard cards + recent activity ---------- */
+function renderDashboardCards(){
+  document.getElementById('cardTotalBooks').innerText = state.books.length;
+  document.getElementById('cardActiveUsers').innerText = state.users.length;
+  document.getElementById('cardBorrowed').innerText = state.borrows.filter(b=>!b.returnedAt).length;
+  document.getElementById('cardFines').innerText = '₦' + state.finesCollected;
+  const recent = document.getElementById('recentActivity');
+  recent.innerHTML = '';
+  state.audit.slice(0,6).forEach(a => recent.innerHTML += `<li>${escapeHtml(a.text)} <span class="text-xs text-gray-400">(${formatDateISO(a.at)})</span></li>`);
+}
 
-      let res = await fetch("http://localhost:8080/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user)
-      });
+/* ---------- helpers: modal, escape ---------- */
+function showModal(innerHtml, onReady){
+  const root = document.getElementById('modalRoot');
+  const idm = 'modal_'+id();
+  root.innerHTML = `
+    <div id="${idm}" class="fixed inset-0 flex items-center justify-center modal-bg z-50">
+      <div class="bg-white p-5 rounded w-11/12 md:w-1/3 shadow">${innerHtml}</div>
+    </div>
+  `;
+  if(onReady) onReady(document.getElementById(idm));
+}
+function closeModal(){ const root=document.getElementById('modalRoot'); root.innerHTML=''; }
 
-      if (res.ok) {
-        alert("User added successfully!");
-        closeUserModal();
-        loadUsers();
-      }
-    });
+function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>"']/g, s=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[s]));}
+function escapeHtmlAttr(str){ return escapeHtml(str).replace(/"/g,'&quot;'); }
 
-    async function loadUsers() {
-      let res = await fetch("http://localhost:8080/api/users");
-      if (res.ok) {
-        let users = await res.json();
-        let table = document.getElementById("userTable");
-        table.innerHTML = "";
-        users.forEach(u => {
-          let row = document.createElement("tr");
-          row.innerHTML = `
-            <td class="p-3">${u.id}</td>
-            <td class="p-3">${u.name}</td>
-            <td class="p-3">${u.role}</td>
-            <td class="p-3">
-              <button onclick="deleteUser('${u.id}')" class="bg-red-600 text-white px-2 py-1 rounded">Delete</button>
-            </td>
-          `;
-          table.appendChild(row);
-        });
-      }
-    }
-
-    async function deleteUser(id) {
-      if (confirm("Delete this user?")) {
-        let res = await fetch(`http://localhost:8080/api/users/${id}`, { method: "DELETE" });
-        if (res.ok) {
-          alert("User deleted!");
-          loadUsers();
-        }
-      }
-    }
-
-    // INITIAL LOAD
-    loadBooks();
-    loadUsers();
-  </script>
+/* ---------- init ---------- */
+function init(){
+  renderBooks(); renderUsers(); renderBorrow(); renderReports(); renderAnnouncements(); renderAudit(); renderDashboardCards(); renderIssueSelects();
+  // wire clear button
+  document.getElementById('clearBookBtn').addEventListener('click', ()=>bookForm.reset());
+  // logout (UI only)
+  document.getElementById('logoutBtn').addEventListener('click', ()=>alert('Logout clicked (implement backend session termination)'));
+  // search
+  document.getElementById('globalSearch').addEventListener('input', (e)=>{
+    const q=e.target.value.toLowerCase();
+    // simple quick filter: highlight matching sections by prefilling lists
+    if(q.length<2) return;
+    // find books/users
+    const foundBooks = state.books.filter(b=> (b.title+b.author+b.isbn).toLowerCase().includes(q));
+    const foundUsers = state.users.filter(u=> (u.name+u.email).toLowerCase().includes(q));
+    if(foundBooks.length) { showSection('books'); renderBooks(); alert('Quick search found '+foundBooks.length+' books (use Books tab for full list)'); }
+    else if(foundUsers.length){ showSection('users'); renderUsers(); alert('Quick search found '+foundUsers.length+' users (use Users tab)'); }
+  });
+}
+init();
+</script>
 </body>
 </html>
